@@ -195,16 +195,15 @@ function ResultsLocked({
         .single() as any;
 
       if (sessionData) {
-        await supabase.from('payments').insert({
+        await (supabase.from('payments').insert({
           session_id: sessionId!,
           user_id: (sessionData as any).user_id,
           amount_cents: 499,
           currency: 'usd',
           provider: 'test',
           provider_payment_intent_id: `bypass_${Date.now()}`,
-        } as any);
           status: 'succeeded',
-        });
+        } as any) as any);
       }
 
       // Reload summary to show unlocked results
