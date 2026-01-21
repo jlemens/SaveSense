@@ -180,7 +180,8 @@ export function SurveyEngine({ flow, startQuestionId, sessionId, flowType, onCom
 
       const loadedAnswers: Record<string, SurveyAnswer> = {};
       
-      (data as any)?.forEach((response: any) => {
+      const responses = (data || []) as Array<{ question_id: string; raw_value: unknown; category: string | null; normalized_monthly_value: number | null }>;
+      responses.forEach((response) => {
         loadedAnswers[response.question_id] = {
           question_id: response.question_id,
           value: response.raw_value,
@@ -218,13 +219,13 @@ export function SurveyEngine({ flow, startQuestionId, sessionId, flowType, onCom
         .from('survey_responses')
         .upsert(
           {
-            session_id: sessionId,
+            session_id: sessionId!,
             flow_type: flowType,
             question_id: questionId,
             category,
             raw_value: value,
             normalized_monthly_value: normalizedValue || null,
-          },
+          } as any,
           {
             onConflict: 'session_id,flow_type,question_id',
           }
