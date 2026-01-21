@@ -42,13 +42,13 @@ export function IncomeFlow() {
       const { data, error } = await supabase
         .from('survey_responses')
         .select('*')
-        .eq('session_id', sessionId)
+        .eq('session_id', sessionId!)
         .eq('flow_type', 'income')
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true }) as any;
 
       if (error) throw error;
 
-      const allResponses = data || [];
+      const allResponses = ((data || []) as any[]) as Array<{ question_id: string; raw_value: unknown; question_id?: string }>;
 
       // Load income streams (only responses created as income_stream_*)
       const loadedStreams: IncomeStream[] = allResponses
@@ -93,14 +93,14 @@ export function IncomeFlow() {
         .from('survey_responses')
         .select('*')
         .eq('id', responseId)
-        .eq('session_id', sessionId)
+        .eq('session_id', sessionId!)
         .eq('flow_type', 'income')
-        .single();
+        .single() as any;
 
       if (error) throw error;
       if (!data) return;
 
-      const stream = data.raw_value as IncomeStream;
+      const stream = (data as any).raw_value as IncomeStream;
       setCurrentStream(stream);
       setEditingResponseId(responseId);
       setShowAddForm(true);
@@ -122,7 +122,7 @@ export function IncomeFlow() {
           category: `Income: ${stream.type}`,
           raw_value: stream,
           normalized_monthly_value: normalizedMonthly,
-        })
+        } as any)
         .eq('id', editingResponseId);
 
       if (error) throw error;
@@ -133,13 +133,13 @@ export function IncomeFlow() {
       const { error } = await supabase
         .from('survey_responses')
         .insert({
-          session_id: sessionId,
+          session_id: sessionId!,
           flow_type: 'income',
           question_id: questionId,
           category: `Income: ${stream.type}`,
           raw_value: stream,
           normalized_monthly_value: normalizedMonthly,
-        });
+        } as any);
 
       if (error) throw error;
     }
@@ -495,7 +495,7 @@ export function IncomeFlow() {
                       .upsert(
                         [
                           {
-                            session_id: sessionId,
+                            session_id: sessionId!,
                             flow_type: 'income',
                             question_id: 'income.tax_applicable',
                             category: null,
@@ -503,14 +503,14 @@ export function IncomeFlow() {
                             normalized_monthly_value: null,
                           },
                           {
-                            session_id: sessionId,
+                            session_id: sessionId!,
                             flow_type: 'income',
                             question_id: 'income.tax_rate',
                             category: null,
                             raw_value: taxRatePercent,
                             normalized_monthly_value: null,
                           },
-                        ],
+                        ] as any,
                         { onConflict: 'session_id,flow_type,question_id' }
                       );
 

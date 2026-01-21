@@ -29,9 +29,9 @@ export function ReviewSession() {
       const { data: sessionData, error: sessionError } = await supabase
         .from('survey_sessions')
         .select('*')
-        .eq('id', sessionId)
+        .eq('id', sessionId!)
         .eq('user_id', user!.id)
-        .single();
+        .single() as any;
 
       if (sessionError) throw sessionError;
       if (!sessionData) {
@@ -39,17 +39,17 @@ export function ReviewSession() {
         return;
       }
 
-      setSession(sessionData);
+      setSession(sessionData as SurveySession);
 
       // Load all responses
       const { data: responsesData, error: responsesError } = await supabase
         .from('survey_responses')
         .select('*')
-        .eq('session_id', sessionId)
-        .order('created_at', { ascending: true });
+        .eq('session_id', sessionId!)
+        .order('created_at', { ascending: true }) as any;
 
       if (responsesError) throw responsesError;
-      setResponses(responsesData || []);
+      setResponses((responsesData || []) as SurveyResponse[]);
     } catch (err) {
       console.error('Error loading data:', err);
       navigate('/dashboard');

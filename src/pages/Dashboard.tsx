@@ -29,7 +29,7 @@ export function Dashboard() {
         .from('survey_sessions')
         .select('*')
         .eq('user_id', user.id)
-        .order('started_at', { ascending: false });
+        .order('started_at', { ascending: false }) as any;
 
       if (error) {
         console.error('Error loading sessions:', error);
@@ -38,7 +38,7 @@ export function Dashboard() {
       
       // Only update if we got valid data
       if (data) {
-        setSessions(data);
+        setSessions(data as SurveySession[]);
       }
     } catch (err) {
       console.error('Error loading sessions:', err);
@@ -66,7 +66,7 @@ export function Dashboard() {
             id: user!.id,
             email: user!.email || '',
             role: 'user',
-          });
+          } as any);
 
         if (createError) {
           console.error('Error creating profile:', createError);
@@ -81,9 +81,9 @@ export function Dashboard() {
           user_id: user!.id,
           status: 'in_progress',
           title: 'My Survey', // Default title, will be updated in TitleInput
-        })
+        } as any)
         .select()
-        .single();
+        .single() as any;
 
       if (error) {
         console.error('Session creation error:', error);
@@ -112,10 +112,10 @@ export function Dashboard() {
     try {
       const { data, error } = await supabase
         .from('survey_sessions')
-        .update({ title: editingTitle.trim() })
+        .update({ title: editingTitle.trim() } as any)
         .eq('id', sessionId)
         .eq('user_id', user!.id)
-        .select();
+        .select() as any;
 
       if (error) {
         console.error('Supabase error updating title:', error);

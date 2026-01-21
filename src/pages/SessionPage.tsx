@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import type { SurveySession, SurveyResponse } from '../types';
+import type { SurveySession } from '../types';
 import { IncomeFlow } from './IncomeFlow';
 import { SurveyEngine } from '../components/SurveyEngine';
 import { expenseFlow, expenseFlowStartId } from '../lib/expenseFlow';
 import { Card } from '../components/Card';
-import { Button } from '../components/Button';
 
 type FlowStage = 'income' | 'expense' | 'complete';
 
@@ -31,9 +30,9 @@ export function SessionPage() {
       const { data: sessionData, error: sessionError } = await supabase
         .from('survey_sessions')
         .select('*')
-        .eq('id', sessionId)
+        .eq('id', sessionId!)
         .eq('user_id', user!.id)
-        .single();
+        .single() as any;
 
       if (sessionError) throw sessionError;
       if (!sessionData) {
@@ -41,10 +40,11 @@ export function SessionPage() {
         return;
       }
 
-      setSession(sessionData);
+      setSession(sessionData as SurveySession);
 
       // Check if title is set, if not redirect to title input
-      if (!sessionData.title || sessionData.title.trim() === '') {
+      const session = sessionData as SurveySession;
+      if (!session.title || session.title.trim() === '') {
         navigate(`/session/${sessionId}/title`);
         return;
       }
@@ -53,17 +53,18 @@ export function SessionPage() {
       const { data: responses } = await supabase
         .from('survey_responses')
         .select('flow_type')
-        .eq('session_id', sessionId);
+        .eq('session_id', sessionId!) as any;
 
-      const hasIncome = responses?.some((r) => r.flow_type === 'income');
-      const hasExpenses = responses?.some((r) => r.flow_type === 'expense');
+      const responsesData = (responses || []) as Array<{ flow_type: string; question_id?: string }>;
+      const hasIncome = responsesData.some((r) => r.flow_type === 'income');
+      const hasExpenses = responsesData.some((r) => r.flow_type === 'expense');
 
-      if (sessionData.status === 'completed') {
+      if (session.status === 'completed') {
         setStage('complete');
         navigate(`/session/${sessionId}/results`);
       } else if (hasExpenses) {
         // Check if expense flow is complete by checking for last question
-        const hasLastQuestion = responses?.some((r) => r.question_id === 'results.summary');
+        const hasLastQuestion = responsesData.some((r) => r.question_id === 'results.summary');
         if (hasLastQuestion) {
           setStage('complete');
         } else {
@@ -92,13 +93,13 @@ export function SessionPage() {
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
-        })
-        .eq('id', sessionId);
+        } as any)
+        .eq('id', sessionId!);
 
       // Trigger summary calculation (will be done by trigger, but we can also call the function)
-      const { error } = await supabase.rpc('calculate_session_summary', {
-        p_session_id: sessionId,
-      });
+      const { error } = await (supabase.rpc('calculate_session_summary', {
+        p_session_id: sessionId!,
+      }) as any);
 
       if (error) {
         console.error('Error calculating summary:', error);

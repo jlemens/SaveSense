@@ -32,7 +32,7 @@ export function ResultsPage() {
         .select('id')
         .eq('user_id', userId)
         .eq('status', 'succeeded')
-        .limit(1);
+        .limit(1) as any;
 
       if (error) {
         console.error('Error checking payments:', error);
@@ -51,8 +51,8 @@ export function ResultsPage() {
       const { data, error } = await supabase
         .from('summaries')
         .select('*')
-        .eq('session_id', sessionId)
-        .single();
+        .eq('session_id', sessionId!)
+        .single() as any;
 
       if (error) throw error;
       
@@ -63,25 +63,25 @@ export function ResultsPage() {
           // User has paid before, auto-unlock this session
           const { error: unlockError } = await supabase
             .from('summaries')
-            .update({ unlocked: true })
-            .eq('session_id', sessionId);
+            .update({ unlocked: true } as any)
+            .eq('session_id', sessionId!);
 
           if (!unlockError) {
             // Reload summary with unlocked status
             const { data: updatedData } = await supabase
               .from('summaries')
               .select('*')
-              .eq('session_id', sessionId)
-              .single();
+              .eq('session_id', sessionId!)
+              .single() as any;
             
-            setSummary(updatedData);
+            setSummary(updatedData as Summary);
             setLoading(false);
             return;
           }
         }
       }
       
-      setSummary(data);
+      setSummary(data as Summary);
     } catch (err) {
       console.error('Error loading summary:', err);
     } finally {
@@ -138,7 +138,7 @@ function ResultsLocked({
         .select('id')
         .eq('user_id', user.id)
         .eq('status', 'succeeded')
-        .limit(1);
+        .limit(1) as any;
 
       if (error) {
         console.error('Error checking payments:', error);
@@ -182,8 +182,8 @@ function ResultsLocked({
       // Unlock the results directly in Supabase
       const { error } = await supabase
         .from('summaries')
-        .update({ unlocked: true })
-        .eq('session_id', sessionId);
+        .update({ unlocked: true } as any)
+        .eq('session_id', sessionId!);
 
       if (error) throw error;
 
@@ -191,17 +191,18 @@ function ResultsLocked({
       const { data: sessionData } = await supabase
         .from('survey_sessions')
         .select('user_id')
-        .eq('id', sessionId)
-        .single();
+        .eq('id', sessionId!)
+        .single() as any;
 
       if (sessionData) {
         await supabase.from('payments').insert({
-          session_id: sessionId,
-          user_id: sessionData.user_id,
+          session_id: sessionId!,
+          user_id: (sessionData as any).user_id,
           amount_cents: 499,
           currency: 'usd',
           provider: 'test',
           provider_payment_intent_id: `bypass_${Date.now()}`,
+        } as any);
           status: 'succeeded',
         });
       }
@@ -362,11 +363,11 @@ function ResultsUnlocked({ summary, sessionId }: { summary: Summary; sessionId: 
       const { data, error } = await supabase
         .from('survey_responses')
         .select('*')
-        .eq('session_id', sessionId)
-        .order('created_at', { ascending: true });
+        .eq('session_id', sessionId!)
+        .order('created_at', { ascending: true }) as any;
 
       if (error) throw error;
-      setResponses(data || []);
+      setResponses((data || []) as SurveyResponse[]);
     } catch (err) {
       console.error('Error loading responses:', err);
     } finally {

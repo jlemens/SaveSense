@@ -74,7 +74,7 @@ export function Signup() {
         // Profile doesn't exist (trigger didn't fire), create it manually
         const { error: insertError } = await supabase
           .from('profiles')
-          .insert({ id: data.user.id, email: data.user.email || email, role });
+          .insert({ id: data.user.id, email: data.user.email || email, role } as any);
         
         if (insertError) {
           console.error('Error inserting profile:', insertError);
@@ -84,7 +84,7 @@ export function Signup() {
         // Profile exists, update the role
         const { error: profileError } = await supabase
           .from('profiles')
-          .update({ role })
+          .update({ role } as any)
           .eq('id', data.user.id);
 
         if (profileError) {
@@ -103,16 +103,16 @@ export function Signup() {
             .from('creators')
             .select('id')
             .eq('referral_code', code)
-            .single();
+            .single() as any;
 
           if (!creatorError && creator) {
             // Update profile with creator_id
             await supabase
               .from('profiles')
               .update({
-                creator_id: creator.id,
+                creator_id: (creator as any).id,
                 referral_code_used: code,
-              })
+              } as any)
               .eq('id', data.user.id);
           }
           
@@ -132,7 +132,7 @@ export function Signup() {
             .from('creators')
             .select('id')
             .eq('referral_code', newReferralCode)
-            .single();
+            .single() as any;
           
           if (!existing) {
             isUnique = true;
@@ -148,7 +148,7 @@ export function Signup() {
             id: data.user.id,
             display_name: email.split('@')[0], // Default to email prefix
             referral_code: newReferralCode,
-          });
+          } as any);
 
         if (creatorError) throw creatorError;
       }

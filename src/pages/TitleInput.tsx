@@ -29,8 +29,8 @@ export function TitleInput() {
     try {
       const { error: updateError } = await supabase
         .from('survey_sessions')
-        .update({ title: title.trim() })
-        .eq('id', sessionId);
+        .update({ title: title.trim() } as any)
+        .eq('id', sessionId!);
 
       if (updateError) throw updateError;
 

@@ -28,18 +28,21 @@ export function CreatorDashboard() {
         .from('creators')
         .select('*')
         .eq('id', user!.id)
-        .single();
+        .single() as any;
 
       if (creatorError) throw creatorError;
       setCreator(creatorData);
 
       // Load stats
-      const { data: statsData, error: statsError } = await supabase.rpc('get_creator_stats', {
+      const { data: statsData, error: statsError } = await (supabase.rpc('get_creator_stats', {
         p_creator_id: user!.id,
-      });
+      }) as any);
 
       if (statsError) throw statsError;
-      setStats(statsData || { referred_users_count: 0, total_paid_unlocks: 0 });
+      const stats = Array.isArray(statsData) && statsData[0] 
+        ? statsData[0] 
+        : { referred_users_count: 0, total_paid_unlocks: 0 };
+      setStats(stats);
     } catch (err) {
       console.error('Error loading creator data:', err);
     } finally {
