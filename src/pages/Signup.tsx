@@ -97,25 +97,27 @@ export function Signup() {
       if (referralCode || sessionStorage.getItem('referral_code')) {
         const code = referralCode || sessionStorage.getItem('referral_code');
         
-        // Look up creator by referral code
-        const { data: creator, error: creatorError } = await supabase
-          .from('creators')
-          .select('id')
-          .eq('referral_code', code)
-          .single();
+        if (code) {
+          // Look up creator by referral code
+          const { data: creator, error: creatorError } = await supabase
+            .from('creators')
+            .select('id')
+            .eq('referral_code', code)
+            .single();
 
-        if (!creatorError && creator) {
-          // Update profile with creator_id
-          await supabase
-            .from('profiles')
-            .update({
-              creator_id: creator.id,
-              referral_code_used: code,
-            })
-            .eq('id', data.user.id);
+          if (!creatorError && creator) {
+            // Update profile with creator_id
+            await supabase
+              .from('profiles')
+              .update({
+                creator_id: creator.id,
+                referral_code_used: code,
+              })
+              .eq('id', data.user.id);
+          }
+          
+          sessionStorage.removeItem('referral_code');
         }
-        
-        sessionStorage.removeItem('referral_code');
       }
 
       // If creator, create creator record

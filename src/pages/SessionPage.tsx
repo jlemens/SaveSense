@@ -82,10 +82,6 @@ export function SessionPage() {
     }
   };
 
-  const handleIncomeComplete = () => {
-    setStage('expense');
-  };
-
   const handleExpenseComplete = async () => {
     if (!sessionId) return;
 
