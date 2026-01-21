@@ -1,4 +1,5 @@
 // Database types matching the actual schema
+// Note: These types ensure type safety with Supabase client
 export type Database = {
   public: {
     Tables: {

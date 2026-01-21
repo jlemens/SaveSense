@@ -180,7 +180,7 @@ export function SurveyEngine({ flow, startQuestionId, sessionId, flowType, onCom
 
       const loadedAnswers: Record<string, SurveyAnswer> = {};
       
-      data?.forEach((response) => {
+      (data as any)?.forEach((response: any) => {
         loadedAnswers[response.question_id] = {
           question_id: response.question_id,
           value: response.raw_value,

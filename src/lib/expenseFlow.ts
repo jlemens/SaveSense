@@ -1,4 +1,4 @@
-import type { SurveyFlow } from '../types';
+import type { SurveyFlow, QuestionNode } from '../types';
 
 // Expense Flow Definition based on the flowsheet
 export const expenseFlow: SurveyFlow = {

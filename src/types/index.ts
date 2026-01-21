@@ -98,7 +98,8 @@ export interface QuestionNode {
   max?: number;
   if_yes?: string;
   if_no?: string;
-  [key: `if_${string}`]: string | undefined; // Dynamic branching based on option values
+  // Dynamic branching based on option values (excludes if_yes and if_no)
+  [key: `if_${string}`]: string | undefined;
   multi_branch?: Record<string, string | null>; // For multi-select questions: maps each option to a follow-up question
   next?: string;
   maps_to_category?: string;
