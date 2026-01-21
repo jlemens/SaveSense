@@ -72,9 +72,9 @@ export function Signup() {
 
       if (!existingProfile) {
         // Profile doesn't exist (trigger didn't fire), create it manually
-        const { error: insertError } = await supabase
+        const { error: insertError } = await (supabase
           .from('profiles')
-          .insert({ id: data.user.id, email: data.user.email || email, role } as any);
+          .insert({ id: data.user.id, email: data.user.email || email, role } as any) as any);
         
         if (insertError) {
           console.error('Error inserting profile:', insertError);
@@ -82,10 +82,10 @@ export function Signup() {
         }
       } else {
         // Profile exists, update the role
-        const { error: profileError } = await supabase
+        const { error: profileError } = await (supabase
           .from('profiles')
           .update({ role } as any)
-          .eq('id', data.user.id);
+          .eq('id', data.user.id) as any);
 
         if (profileError) {
           console.error('Error updating profile:', profileError);
@@ -107,13 +107,13 @@ export function Signup() {
 
           if (!creatorError && creator) {
             // Update profile with creator_id
-            await supabase
+            await (supabase
               .from('profiles')
               .update({
                 creator_id: (creator as any).id,
                 referral_code_used: code,
               } as any)
-              .eq('id', data.user.id);
+              .eq('id', data.user.id) as any);
           }
           
           sessionStorage.removeItem('referral_code');
@@ -142,13 +142,13 @@ export function Signup() {
           }
         }
 
-        const { error: creatorError } = await supabase
+        const { error: creatorError } = await (supabase
           .from('creators')
           .insert({
             id: data.user.id,
             display_name: email.split('@')[0], // Default to email prefix
             referral_code: newReferralCode,
-          } as any);
+          } as any) as any);
 
         if (creatorError) throw creatorError;
       }

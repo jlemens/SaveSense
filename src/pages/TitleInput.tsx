@@ -27,10 +27,10 @@ export function TitleInput() {
 
     setLoading(true);
     try {
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase
         .from('survey_sessions')
         .update({ title: title.trim() } as any)
-        .eq('id', sessionId!);
+        .eq('id', sessionId!) as any);
 
       if (updateError) throw updateError;
 

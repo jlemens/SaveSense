@@ -88,13 +88,13 @@ export function SessionPage() {
 
     try {
       // Mark session as completed
-      await supabase
+      await (supabase
         .from('survey_sessions')
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
         } as any)
-        .eq('id', sessionId!);
+        .eq('id', sessionId!) as any);
 
       // Trigger summary calculation (will be done by trigger, but we can also call the function)
       const { error } = await (supabase.rpc('calculate_session_summary', {
