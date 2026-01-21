@@ -29,6 +29,7 @@ export function TitleInput() {
     try {
       const { error: updateError } = await (supabase
         .from('survey_sessions')
+        // @ts-expect-error - Supabase type inference issue
         .update({ title: title.trim() } as any)
         .eq('id', sessionId!) as any);
 

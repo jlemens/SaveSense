@@ -110,12 +110,13 @@ export function Dashboard() {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase
         .from('survey_sessions')
+        // @ts-expect-error - Supabase type inference issue
         .update({ title: editingTitle.trim() } as any)
         .eq('id', sessionId)
         .eq('user_id', user!.id)
-        .select() as any;
+        .select() as any);
 
       if (error) {
         console.error('Supabase error updating title:', error);
@@ -167,8 +168,7 @@ export function Dashboard() {
         .from('survey_sessions')
         .delete()
         .eq('id', sessionId)
-        .eq('user_id', user!.id)
-        .select('id', { count: 'exact', head: true });
+        .eq('user_id', user!.id);
 
       if (error) {
         console.error('Delete error:', error);

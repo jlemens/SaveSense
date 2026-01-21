@@ -84,6 +84,7 @@ export function Signup() {
         // Profile exists, update the role
         const { error: profileError } = await (supabase
           .from('profiles')
+          // @ts-expect-error - Supabase type inference issue
           .update({ role } as any)
           .eq('id', data.user.id) as any);
 
@@ -109,11 +110,12 @@ export function Signup() {
             // Update profile with creator_id
             await (supabase
               .from('profiles')
+              // @ts-expect-error - Supabase type inference issue
               .update({
                 creator_id: (creator as any).id,
                 referral_code_used: code,
               } as any)
-              .eq('id', data.user.id) as any);
+              .eq('id', data.user.id) as any) as any;
           }
           
           sessionStorage.removeItem('referral_code');

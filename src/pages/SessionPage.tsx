@@ -90,6 +90,7 @@ export function SessionPage() {
       // Mark session as completed
       await (supabase
         .from('survey_sessions')
+        // @ts-expect-error - Supabase type inference issue
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
@@ -97,9 +98,10 @@ export function SessionPage() {
         .eq('id', sessionId!) as any);
 
       // Trigger summary calculation (will be done by trigger, but we can also call the function)
+      // @ts-expect-error - Supabase type inference issue
       const { error } = await (supabase.rpc('calculate_session_summary', {
         p_session_id: sessionId!,
-      }) as any);
+      } as any) as any);
 
       if (error) {
         console.error('Error calculating summary:', error);

@@ -61,10 +61,11 @@ export function ResultsPage() {
         const hasPaid = await checkUserHasPaid(user.id);
         if (hasPaid) {
           // User has paid before, auto-unlock this session
-          const { error: unlockError } = await supabase
+          const { error: unlockError } = await (supabase
             .from('summaries')
+            // @ts-expect-error - Supabase type inference issue
             .update({ unlocked: true } as any)
-            .eq('session_id', sessionId!);
+            .eq('session_id', sessionId!) as any);
 
           if (!unlockError) {
             // Reload summary with unlocked status
@@ -180,10 +181,11 @@ function ResultsLocked({
     setBypassLoading(true);
     try {
       // Unlock the results directly in Supabase
-      const { error } = await supabase
+      const { error } = await (supabase
         .from('summaries')
+        // @ts-expect-error - Supabase type inference issue
         .update({ unlocked: true } as any)
-        .eq('session_id', sessionId!);
+        .eq('session_id', sessionId!) as any);
 
       if (error) throw error;
 

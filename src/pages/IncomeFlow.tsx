@@ -48,7 +48,7 @@ export function IncomeFlow() {
 
       if (error) throw error;
 
-      const allResponses = ((data || []) as any[]) as Array<{ question_id: string; raw_value: unknown; question_id?: string }>;
+      const allResponses = ((data || []) as any[]) as Array<{ question_id: string; raw_value: unknown }>;
 
       // Load income streams (only responses created as income_stream_*)
       const loadedStreams: IncomeStream[] = allResponses
@@ -116,14 +116,15 @@ export function IncomeFlow() {
 
     if (isUpdate && editingResponseId) {
       // Update existing response
-      const { error } = await supabase
+      const { error } = await (supabase
         .from('survey_responses')
+        // @ts-expect-error - Supabase type inference issue
         .update({
           category: `Income: ${stream.type}`,
           raw_value: stream,
           normalized_monthly_value: normalizedMonthly,
         } as any)
-        .eq('id', editingResponseId);
+        .eq('id', editingResponseId) as any);
 
       if (error) throw error;
     } else {

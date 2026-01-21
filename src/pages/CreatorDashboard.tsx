@@ -34,9 +34,10 @@ export function CreatorDashboard() {
       setCreator(creatorData);
 
       // Load stats
+      // @ts-expect-error - Supabase type inference issue
       const { data: statsData, error: statsError } = await (supabase.rpc('get_creator_stats', {
         p_creator_id: user!.id,
-      }) as any);
+      } as any) as any);
 
       if (statsError) throw statsError;
       const stats = Array.isArray(statsData) && statsData[0] 
